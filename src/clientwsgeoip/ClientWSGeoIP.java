@@ -5,7 +5,9 @@
  */
 package clientwsgeoip;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Scanner;
@@ -25,16 +27,17 @@ public class ClientWSGeoIP {
     public static void main(String[] args) throws MalformedURLException, IOException, Exception {
         String stringURL = "http://www.webservicex.net/geoipservice.asmx/GetGeoIPContext";
         URL url = new URL(stringURL);
-        Scanner scanner = new Scanner(url.openStream());
-        String resource = new String();
-        while (scanner.hasNext()) {
-            resource += scanner.next();
+        
+        BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+        String rest = new String();
+        String line;
+        while((line = br.readLine()) != null){
+            rest += line;
         }
         
-        System.out.println("RESPONSE: " + resource);
         Serializer serializer = new Persister();
         GeoIP geoIP = new GeoIP();
-        serializer.read(geoIP, resource);
+        serializer.read(geoIP, rest);
         System.out.println("CountryName: " + geoIP.getCountryName());
     }
     
